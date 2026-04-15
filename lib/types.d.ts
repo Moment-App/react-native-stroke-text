@@ -1,0 +1,17 @@
+import type { ReactNode } from 'react';
+import type { StyleProp, TextStyle } from 'react-native';
+import type { StrokeTextAlign, StrokeTextAlignVertical, StrokeTextDecorationLine, StrokeTextEllipsizeMode, StrokeTextFontStyle, StrokeTextMethods, StrokeTextProps as StrokeTextNitroProps, StrokeTextTransform, StrokeTextView } from './specs/StrokeTextView.nitro';
+export type { StrokeTextAlign, StrokeTextAlignVertical, StrokeTextDecorationLine, StrokeTextEllipsizeMode, StrokeTextFontStyle, StrokeTextMethods, StrokeTextTransform, StrokeTextView, };
+type OptionalKeys<T> = {
+    [K in keyof T]-?: {} extends Pick<T, K> ? K : never;
+}[keyof T];
+type OptionalPropsAcceptUndefined<T> = Omit<T, OptionalKeys<T>> & {
+    [K in OptionalKeys<T>]?: T[K] | undefined;
+};
+export type StrokeTextNativeProps = OptionalPropsAcceptUndefined<StrokeTextNitroProps>;
+export type StrokeTextProps = OptionalPropsAcceptUndefined<Omit<StrokeTextNitroProps, 'text'> & {
+    children?: ReactNode;
+    text?: string;
+    style?: StyleProp<TextStyle>;
+    hybridRef?: (ref: StrokeTextView) => void;
+}>;

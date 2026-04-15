@@ -19,7 +19,7 @@ import com.margelo.nitro.stroketext.*
 /**
  * Represents the React Native `ViewManager` for the "StrokeTextView" Nitro HybridView.
  */
-public class HybridStrokeTextViewManager: SimpleViewManager<View>() {
+public open class HybridStrokeTextViewManager: SimpleViewManager<View>() {
   init {
     if (RecyclableView::class.java.isAssignableFrom(HybridStrokeTextView::class.java)) {
       // Enable view recycling

@@ -19,7 +19,7 @@ namespace margelo::nitro::stroketext {
    */
   struct JStrokeTextAlign final: public jni::JavaClass<JStrokeTextAlign> {
   public:
-    static auto constexpr kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextAlign;";
+    static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextAlign;";
 
   public:
     /**

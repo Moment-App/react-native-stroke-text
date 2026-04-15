@@ -37,281 +37,275 @@ namespace margelo::nitro::stroketext { enum class StrokeTextEllipsizeMode; }
 
 namespace margelo::nitro::stroketext {
 
-  jni::local_ref<JHybridStrokeTextViewSpec::jhybriddata> JHybridStrokeTextViewSpec::initHybrid(jni::alias_ref<jhybridobject> jThis) {
+  std::shared_ptr<JHybridStrokeTextViewSpec> JHybridStrokeTextViewSpec::JavaPart::getJHybridStrokeTextViewSpec() {
+    auto hybridObject = JHybridObject::JavaPart::getJHybridObject();
+    auto castHybridObject = std::dynamic_pointer_cast<JHybridStrokeTextViewSpec>(hybridObject);
+    if (castHybridObject == nullptr) [[unlikely]] {
+      throw std::runtime_error("Failed to downcast JHybridObject to JHybridStrokeTextViewSpec!");
+    }
+    return castHybridObject;
+  }
+
+  jni::local_ref<JHybridStrokeTextViewSpec::CxxPart::jhybriddata> JHybridStrokeTextViewSpec::CxxPart::initHybrid(jni::alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
   }
 
-  void JHybridStrokeTextViewSpec::registerNatives() {
-    registerHybrid({
-      makeNativeMethod("initHybrid", JHybridStrokeTextViewSpec::initHybrid),
-    });
-  }
-
-  size_t JHybridStrokeTextViewSpec::getExternalMemorySize() noexcept {
-    static const auto method = javaClassStatic()->getMethod<jlong()>("getMemorySize");
-    return method(_javaPart);
-  }
-
-  bool JHybridStrokeTextViewSpec::equals(const std::shared_ptr<HybridObject>& other) {
-    if (auto otherCast = std::dynamic_pointer_cast<JHybridStrokeTextViewSpec>(other)) {
-      return _javaPart == otherCast->_javaPart;
+  std::shared_ptr<JHybridObject> JHybridStrokeTextViewSpec::CxxPart::createHybridObject(const jni::local_ref<JHybridObject::JavaPart>& javaPart) {
+    auto castJavaPart = jni::dynamic_ref_cast<JHybridStrokeTextViewSpec::JavaPart>(javaPart);
+    if (castJavaPart == nullptr) [[unlikely]] {
+      throw std::runtime_error("Failed to cast JHybridObject::JavaPart to JHybridStrokeTextViewSpec::JavaPart!");
     }
-    return false;
+    return std::make_shared<JHybridStrokeTextViewSpec>(castJavaPart);
   }
 
-  void JHybridStrokeTextViewSpec::dispose() noexcept {
-    static const auto method = javaClassStatic()->getMethod<void()>("dispose");
-    method(_javaPart);
-  }
-
-  std::string JHybridStrokeTextViewSpec::toString() {
-    static const auto method = javaClassStatic()->getMethod<jni::JString()>("toString");
-    auto javaString = method(_javaPart);
-    return javaString->toStdString();
+  void JHybridStrokeTextViewSpec::CxxPart::registerNatives() {
+    registerHybrid({
+      makeNativeMethod("initHybrid", JHybridStrokeTextViewSpec::CxxPart::initHybrid),
+    });
   }
 
   // Properties
   std::string JHybridStrokeTextViewSpec::getText() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getText");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getText");
     auto __result = method(_javaPart);
     return __result->toStdString();
   }
   void JHybridStrokeTextViewSpec::setText(const std::string& text) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* text */)>("setText");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* text */)>("setText");
     method(_javaPart, jni::make_jstring(text));
   }
   std::optional<std::string> JHybridStrokeTextViewSpec::getColor() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getColor");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getColor");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toStdString()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setColor(const std::optional<std::string>& color) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* color */)>("setColor");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* color */)>("setColor");
     method(_javaPart, color.has_value() ? jni::make_jstring(color.value()) : nullptr);
   }
   std::optional<std::string> JHybridStrokeTextViewSpec::getStrokeColor() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getStrokeColor");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getStrokeColor");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toStdString()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setStrokeColor(const std::optional<std::string>& strokeColor) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* strokeColor */)>("setStrokeColor");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* strokeColor */)>("setStrokeColor");
     method(_javaPart, strokeColor.has_value() ? jni::make_jstring(strokeColor.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getStrokeWidth() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getStrokeWidth");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getStrokeWidth");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setStrokeWidth(std::optional<double> strokeWidth) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* strokeWidth */)>("setStrokeWidth");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* strokeWidth */)>("setStrokeWidth");
     method(_javaPart, strokeWidth.has_value() ? jni::JDouble::valueOf(strokeWidth.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getFontSize() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getFontSize");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getFontSize");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setFontSize(std::optional<double> fontSize) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* fontSize */)>("setFontSize");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* fontSize */)>("setFontSize");
     method(_javaPart, fontSize.has_value() ? jni::JDouble::valueOf(fontSize.value()) : nullptr);
   }
   std::optional<std::string> JHybridStrokeTextViewSpec::getFontWeight() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getFontWeight");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getFontWeight");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toStdString()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setFontWeight(const std::optional<std::string>& fontWeight) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* fontWeight */)>("setFontWeight");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* fontWeight */)>("setFontWeight");
     method(_javaPart, fontWeight.has_value() ? jni::make_jstring(fontWeight.value()) : nullptr);
   }
   std::optional<std::string> JHybridStrokeTextViewSpec::getFontFamily() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getFontFamily");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JString>()>("getFontFamily");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toStdString()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setFontFamily(const std::optional<std::string>& fontFamily) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* fontFamily */)>("setFontFamily");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* fontFamily */)>("setFontFamily");
     method(_javaPart, fontFamily.has_value() ? jni::make_jstring(fontFamily.value()) : nullptr);
   }
   std::optional<StrokeTextFontStyle> JHybridStrokeTextViewSpec::getFontStyle() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextFontStyle>()>("getFontStyle");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStrokeTextFontStyle>()>("getFontStyle");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setFontStyle(std::optional<StrokeTextFontStyle> fontStyle) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextFontStyle> /* fontStyle */)>("setFontStyle");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextFontStyle> /* fontStyle */)>("setFontStyle");
     method(_javaPart, fontStyle.has_value() ? JStrokeTextFontStyle::fromCpp(fontStyle.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getLineHeight() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getLineHeight");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getLineHeight");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setLineHeight(std::optional<double> lineHeight) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* lineHeight */)>("setLineHeight");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* lineHeight */)>("setLineHeight");
     method(_javaPart, lineHeight.has_value() ? jni::JDouble::valueOf(lineHeight.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getLetterSpacing() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getLetterSpacing");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getLetterSpacing");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setLetterSpacing(std::optional<double> letterSpacing) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* letterSpacing */)>("setLetterSpacing");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* letterSpacing */)>("setLetterSpacing");
     method(_javaPart, letterSpacing.has_value() ? jni::JDouble::valueOf(letterSpacing.value()) : nullptr);
   }
   std::optional<StrokeTextAlign> JHybridStrokeTextViewSpec::getTextAlign() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextAlign>()>("getTextAlign");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStrokeTextAlign>()>("getTextAlign");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setTextAlign(std::optional<StrokeTextAlign> textAlign) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextAlign> /* textAlign */)>("setTextAlign");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextAlign> /* textAlign */)>("setTextAlign");
     method(_javaPart, textAlign.has_value() ? JStrokeTextAlign::fromCpp(textAlign.value()) : nullptr);
   }
   std::optional<StrokeTextAlignVertical> JHybridStrokeTextViewSpec::getTextAlignVertical() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextAlignVertical>()>("getTextAlignVertical");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStrokeTextAlignVertical>()>("getTextAlignVertical");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setTextAlignVertical(std::optional<StrokeTextAlignVertical> textAlignVertical) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextAlignVertical> /* textAlignVertical */)>("setTextAlignVertical");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextAlignVertical> /* textAlignVertical */)>("setTextAlignVertical");
     method(_javaPart, textAlignVertical.has_value() ? JStrokeTextAlignVertical::fromCpp(textAlignVertical.value()) : nullptr);
   }
   std::optional<StrokeTextDecorationLine> JHybridStrokeTextViewSpec::getTextDecorationLine() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextDecorationLine>()>("getTextDecorationLine");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStrokeTextDecorationLine>()>("getTextDecorationLine");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setTextDecorationLine(std::optional<StrokeTextDecorationLine> textDecorationLine) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextDecorationLine> /* textDecorationLine */)>("setTextDecorationLine");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextDecorationLine> /* textDecorationLine */)>("setTextDecorationLine");
     method(_javaPart, textDecorationLine.has_value() ? JStrokeTextDecorationLine::fromCpp(textDecorationLine.value()) : nullptr);
   }
   std::optional<StrokeTextTransform> JHybridStrokeTextViewSpec::getTextTransform() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextTransform>()>("getTextTransform");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStrokeTextTransform>()>("getTextTransform");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setTextTransform(std::optional<StrokeTextTransform> textTransform) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextTransform> /* textTransform */)>("setTextTransform");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextTransform> /* textTransform */)>("setTextTransform");
     method(_javaPart, textTransform.has_value() ? JStrokeTextTransform::fromCpp(textTransform.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getOpacity() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getOpacity");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getOpacity");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setOpacity(std::optional<double> opacity) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* opacity */)>("setOpacity");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* opacity */)>("setOpacity");
     method(_javaPart, opacity.has_value() ? jni::JDouble::valueOf(opacity.value()) : nullptr);
   }
   std::optional<bool> JHybridStrokeTextViewSpec::getAllowFontScaling() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getAllowFontScaling");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getAllowFontScaling");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(static_cast<bool>(__result->value())) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setAllowFontScaling(std::optional<bool> allowFontScaling) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* allowFontScaling */)>("setAllowFontScaling");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* allowFontScaling */)>("setAllowFontScaling");
     method(_javaPart, allowFontScaling.has_value() ? jni::JBoolean::valueOf(allowFontScaling.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getMaxFontSizeMultiplier() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getMaxFontSizeMultiplier");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getMaxFontSizeMultiplier");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setMaxFontSizeMultiplier(std::optional<double> maxFontSizeMultiplier) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* maxFontSizeMultiplier */)>("setMaxFontSizeMultiplier");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* maxFontSizeMultiplier */)>("setMaxFontSizeMultiplier");
     method(_javaPart, maxFontSizeMultiplier.has_value() ? jni::JDouble::valueOf(maxFontSizeMultiplier.value()) : nullptr);
   }
   std::optional<bool> JHybridStrokeTextViewSpec::getIncludeFontPadding() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getIncludeFontPadding");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JBoolean>()>("getIncludeFontPadding");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(static_cast<bool>(__result->value())) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setIncludeFontPadding(std::optional<bool> includeFontPadding) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* includeFontPadding */)>("setIncludeFontPadding");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JBoolean> /* includeFontPadding */)>("setIncludeFontPadding");
     method(_javaPart, includeFontPadding.has_value() ? jni::JBoolean::valueOf(includeFontPadding.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getNumberOfLines() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getNumberOfLines");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getNumberOfLines");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setNumberOfLines(std::optional<double> numberOfLines) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* numberOfLines */)>("setNumberOfLines");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* numberOfLines */)>("setNumberOfLines");
     method(_javaPart, numberOfLines.has_value() ? jni::JDouble::valueOf(numberOfLines.value()) : nullptr);
   }
   std::optional<StrokeTextEllipsizeMode> JHybridStrokeTextViewSpec::getEllipsizeMode() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JStrokeTextEllipsizeMode>()>("getEllipsizeMode");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStrokeTextEllipsizeMode>()>("getEllipsizeMode");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->toCpp()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setEllipsizeMode(std::optional<StrokeTextEllipsizeMode> ellipsizeMode) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextEllipsizeMode> /* ellipsizeMode */)>("setEllipsizeMode");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<JStrokeTextEllipsizeMode> /* ellipsizeMode */)>("setEllipsizeMode");
     method(_javaPart, ellipsizeMode.has_value() ? JStrokeTextEllipsizeMode::fromCpp(ellipsizeMode.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPadding() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPadding");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPadding");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPadding(std::optional<double> padding) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* padding */)>("setPadding");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* padding */)>("setPadding");
     method(_javaPart, padding.has_value() ? jni::JDouble::valueOf(padding.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPaddingVertical() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingVertical");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingVertical");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPaddingVertical(std::optional<double> paddingVertical) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingVertical */)>("setPaddingVertical");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingVertical */)>("setPaddingVertical");
     method(_javaPart, paddingVertical.has_value() ? jni::JDouble::valueOf(paddingVertical.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPaddingHorizontal() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingHorizontal");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingHorizontal");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPaddingHorizontal(std::optional<double> paddingHorizontal) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingHorizontal */)>("setPaddingHorizontal");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingHorizontal */)>("setPaddingHorizontal");
     method(_javaPart, paddingHorizontal.has_value() ? jni::JDouble::valueOf(paddingHorizontal.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPaddingTop() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingTop");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingTop");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPaddingTop(std::optional<double> paddingTop) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingTop */)>("setPaddingTop");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingTop */)>("setPaddingTop");
     method(_javaPart, paddingTop.has_value() ? jni::JDouble::valueOf(paddingTop.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPaddingRight() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingRight");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingRight");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPaddingRight(std::optional<double> paddingRight) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingRight */)>("setPaddingRight");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingRight */)>("setPaddingRight");
     method(_javaPart, paddingRight.has_value() ? jni::JDouble::valueOf(paddingRight.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPaddingBottom() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingBottom");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingBottom");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPaddingBottom(std::optional<double> paddingBottom) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingBottom */)>("setPaddingBottom");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingBottom */)>("setPaddingBottom");
     method(_javaPart, paddingBottom.has_value() ? jni::JDouble::valueOf(paddingBottom.value()) : nullptr);
   }
   std::optional<double> JHybridStrokeTextViewSpec::getPaddingLeft() {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingLeft");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JDouble>()>("getPaddingLeft");
     auto __result = method(_javaPart);
     return __result != nullptr ? std::make_optional(__result->value()) : std::nullopt;
   }
   void JHybridStrokeTextViewSpec::setPaddingLeft(std::optional<double> paddingLeft) {
-    static const auto method = javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingLeft */)>("setPaddingLeft");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JDouble> /* paddingLeft */)>("setPaddingLeft");
     method(_javaPart, paddingLeft.has_value() ? jni::JDouble::valueOf(paddingLeft.value()) : nullptr);
   }
 

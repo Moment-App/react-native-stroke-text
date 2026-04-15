@@ -57,7 +57,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline std::string get_std__optional_std__string_(const std::optional<std::string>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<double>
@@ -72,7 +72,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline double get_std__optional_double_(const std::optional<double>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<StrokeTextFontStyle>
@@ -87,7 +87,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextFontStyle get_std__optional_StrokeTextFontStyle_(const std::optional<StrokeTextFontStyle>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<StrokeTextAlign>
@@ -102,7 +102,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextAlign get_std__optional_StrokeTextAlign_(const std::optional<StrokeTextAlign>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<StrokeTextAlignVertical>
@@ -117,7 +117,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextAlignVertical get_std__optional_StrokeTextAlignVertical_(const std::optional<StrokeTextAlignVertical>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<StrokeTextDecorationLine>
@@ -132,7 +132,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextDecorationLine get_std__optional_StrokeTextDecorationLine_(const std::optional<StrokeTextDecorationLine>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<StrokeTextTransform>
@@ -147,7 +147,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextTransform get_std__optional_StrokeTextTransform_(const std::optional<StrokeTextTransform>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<bool>
@@ -162,7 +162,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline bool get_std__optional_bool_(const std::optional<bool>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::optional<StrokeTextEllipsizeMode>
@@ -177,7 +177,7 @@ namespace margelo::nitro::stroketext::bridge::swift {
     return optional.has_value();
   }
   inline StrokeTextEllipsizeMode get_std__optional_StrokeTextEllipsizeMode_(const std::optional<StrokeTextEllipsizeMode>& optional) noexcept {
-    return *optional;
+    return optional.value();
   }
   
   // pragma MARK: std::shared_ptr<HybridStrokeTextViewSpec>

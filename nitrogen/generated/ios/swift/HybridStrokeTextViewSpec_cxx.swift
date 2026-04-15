@@ -5,7 +5,6 @@
 /// Copyright © Marc Rousavy @ Margelo
 ///
 
-import Foundation
 import NitroModules
 
 /**
@@ -194,7 +193,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.strokeWidth = newValue.value
+      self.__implementation.strokeWidth = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -211,7 +217,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.fontSize = newValue.value
+      self.__implementation.fontSize = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -293,7 +306,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.lineHeight = newValue.value
+      self.__implementation.lineHeight = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -310,7 +330,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.letterSpacing = newValue.value
+      self.__implementation.letterSpacing = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -395,7 +422,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.opacity = newValue.value
+      self.__implementation.opacity = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -436,7 +470,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.maxFontSizeMultiplier = newValue.value
+      self.__implementation.maxFontSizeMultiplier = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -477,7 +518,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.numberOfLines = newValue.value
+      self.__implementation.numberOfLines = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -511,7 +559,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.padding = newValue.value
+      self.__implementation.padding = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -528,7 +583,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.paddingVertical = newValue.value
+      self.__implementation.paddingVertical = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -545,7 +607,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.paddingHorizontal = newValue.value
+      self.__implementation.paddingHorizontal = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -562,7 +631,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.paddingTop = newValue.value
+      self.__implementation.paddingTop = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -579,7 +655,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.paddingRight = newValue.value
+      self.__implementation.paddingRight = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -596,7 +679,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.paddingBottom = newValue.value
+      self.__implementation.paddingBottom = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
   
@@ -613,7 +703,14 @@ open class HybridStrokeTextViewSpec_cxx {
     }
     @inline(__always)
     set {
-      self.__implementation.paddingLeft = newValue.value
+      self.__implementation.paddingLeft = { () -> Double? in
+        if bridge.has_value_std__optional_double_(newValue) {
+          let __unwrapped = bridge.get_std__optional_double_(newValue)
+          return __unwrapped
+        } else {
+          return nil
+        }
+      }()
     }
   }
 
@@ -631,7 +728,11 @@ open class HybridStrokeTextViewSpec_cxx {
   }
   
   public final func maybePrepareForRecycle() {
-    guard let recyclable = __implementation as? RecyclableView else { return }
+    guard let recyclable = __implementation as? any RecyclableView else { return }
     recyclable.prepareForRecycle()
+  }
+  
+  public final func onDropView() {
+    __implementation.onDropView()
   }
 }

@@ -19,7 +19,7 @@ namespace margelo::nitro::stroketext {
    */
   struct JStrokeTextFontStyle final: public jni::JavaClass<JStrokeTextFontStyle> {
   public:
-    static auto constexpr kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextFontStyle;";
+    static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextFontStyle;";
 
   public:
     /**

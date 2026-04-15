@@ -18,34 +18,33 @@ namespace margelo::nitro::stroketext {
 
   using namespace facebook;
 
-  class JHybridStrokeTextViewSpec: public jni::HybridClass<JHybridStrokeTextViewSpec, JHybridObject>,
-                                   public virtual HybridStrokeTextViewSpec {
+  class JHybridStrokeTextViewSpec: public virtual HybridStrokeTextViewSpec, public virtual JHybridObject {
   public:
-    static auto constexpr kJavaDescriptor = "Lcom/margelo/nitro/stroketext/HybridStrokeTextViewSpec;";
-    static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
-    static void registerNatives();
+    struct JavaPart: public jni::JavaClass<JavaPart, JHybridObject::JavaPart> {
+      static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/HybridStrokeTextViewSpec;";
+      std::shared_ptr<JHybridStrokeTextViewSpec> getJHybridStrokeTextViewSpec();
+    };
+    struct CxxPart: public jni::HybridClass<CxxPart, JHybridObject::CxxPart> {
+      static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/HybridStrokeTextViewSpec$CxxPart;";
+      static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
+      static void registerNatives();
+      using HybridBase::HybridBase;
+    protected:
+      std::shared_ptr<JHybridObject> createHybridObject(const jni::local_ref<JHybridObject::JavaPart>& javaPart) override;
+    };
 
-  protected:
-    // C++ constructor (called from Java via `initHybrid()`)
-    explicit JHybridStrokeTextViewSpec(jni::alias_ref<jhybridobject> jThis) :
+  public:
+    explicit JHybridStrokeTextViewSpec(const jni::local_ref<JHybridStrokeTextViewSpec::JavaPart>& javaPart):
       HybridObject(HybridStrokeTextViewSpec::TAG),
-      HybridBase(jThis),
-      _javaPart(jni::make_global(jThis)) {}
-
-  public:
+      JHybridObject(javaPart),
+      _javaPart(jni::make_global(javaPart)) {}
     ~JHybridStrokeTextViewSpec() override {
       // Hermes GC can destroy JS objects on a non-JNI Thread.
       jni::ThreadScope::WithClassLoader([&] { _javaPart.reset(); });
     }
 
   public:
-    size_t getExternalMemorySize() noexcept override;
-    bool equals(const std::shared_ptr<HybridObject>& other) override;
-    void dispose() noexcept override;
-    std::string toString() override;
-
-  public:
-    inline const jni::global_ref<JHybridStrokeTextViewSpec::javaobject>& getJavaPart() const noexcept {
+    inline const jni::global_ref<JHybridStrokeTextViewSpec::JavaPart>& getJavaPart() const noexcept {
       return _javaPart;
     }
 
@@ -111,9 +110,7 @@ namespace margelo::nitro::stroketext {
     
 
   private:
-    friend HybridBase;
-    using HybridBase::HybridBase;
-    jni::global_ref<JHybridStrokeTextViewSpec::javaobject> _javaPart;
+    jni::global_ref<JHybridStrokeTextViewSpec::JavaPart> _javaPart;
   };
 
 } // namespace margelo::nitro::stroketext

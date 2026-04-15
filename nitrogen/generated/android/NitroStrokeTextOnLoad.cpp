@@ -22,25 +22,35 @@
 namespace margelo::nitro::stroketext {
 
 int initialize(JavaVM* vm) {
+  return facebook::jni::initialize(vm, []() {
+    ::margelo::nitro::stroketext::registerAllNatives();
+  });
+}
+
+struct JHybridStrokeTextViewSpecImpl: public jni::JavaClass<JHybridStrokeTextViewSpecImpl, JHybridStrokeTextViewSpec::JavaPart> {
+  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/HybridStrokeTextView;";
+  static std::shared_ptr<JHybridStrokeTextViewSpec> create() {
+    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridStrokeTextViewSpecImpl::javaobject()>();
+    jni::local_ref<JHybridStrokeTextViewSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
+    return javaPart->getJHybridStrokeTextViewSpec();
+  }
+};
+
+void registerAllNatives() {
   using namespace margelo::nitro;
   using namespace margelo::nitro::stroketext;
-  using namespace facebook;
 
-  return facebook::jni::initialize(vm, [] {
-    // Register native JNI methods
-    margelo::nitro::stroketext::JHybridStrokeTextViewSpec::registerNatives();
-    margelo::nitro::stroketext::views::JHybridStrokeTextViewStateUpdater::registerNatives();
+  // Register native JNI methods
+  margelo::nitro::stroketext::JHybridStrokeTextViewSpec::CxxPart::registerNatives();
+  margelo::nitro::stroketext::views::JHybridStrokeTextViewStateUpdater::registerNatives();
 
-    // Register Nitro Hybrid Objects
-    HybridObjectRegistry::registerHybridObjectConstructor(
-      "StrokeTextView",
-      []() -> std::shared_ptr<HybridObject> {
-        static DefaultConstructableObject<JHybridStrokeTextViewSpec::javaobject> object("com/margelo/nitro/stroketext/HybridStrokeTextView");
-        auto instance = object.create();
-        return instance->cthis()->shared();
-      }
-    );
-  });
+  // Register Nitro Hybrid Objects
+  HybridObjectRegistry::registerHybridObjectConstructor(
+    "StrokeTextView",
+    []() -> std::shared_ptr<HybridObject> {
+      return JHybridStrokeTextViewSpecImpl::create();
+    }
+  );
 }
 
 } // namespace margelo::nitro::stroketext

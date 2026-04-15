@@ -43,7 +43,6 @@ namespace margelo::nitro::stroketext::views {
   class HybridStrokeTextViewProps final: public react::ViewProps {
   public:
     HybridStrokeTextViewProps() = default;
-    HybridStrokeTextViewProps(const HybridStrokeTextViewProps&);
     HybridStrokeTextViewProps(const react::PropsParserContext& context,
                               const HybridStrokeTextViewProps& sourceProps,
                               const react::RawProps& rawProps);
@@ -88,10 +87,14 @@ namespace margelo::nitro::stroketext::views {
   class HybridStrokeTextViewState final {
   public:
     HybridStrokeTextViewState() = default;
+    explicit HybridStrokeTextViewState(const std::shared_ptr<HybridStrokeTextViewProps>& props):
+      _props(props) {}
 
   public:
-    void setProps(const HybridStrokeTextViewProps& props) { _props.emplace(props); }
-    const std::optional<HybridStrokeTextViewProps>& getProps() const { return _props; }
+    [[nodiscard]]
+    const std::shared_ptr<HybridStrokeTextViewProps>& getProps() const {
+      return _props;
+    }
 
   public:
 #ifdef ANDROID
@@ -105,7 +108,7 @@ namespace margelo::nitro::stroketext::views {
 #endif
 
   private:
-    std::optional<HybridStrokeTextViewProps> _props;
+    std::shared_ptr<HybridStrokeTextViewProps> _props;
   };
 
   /**
@@ -121,7 +124,7 @@ namespace margelo::nitro::stroketext::views {
    */
   class HybridStrokeTextViewComponentDescriptor final: public react::ConcreteComponentDescriptor<HybridStrokeTextViewShadowNode> {
   public:
-    HybridStrokeTextViewComponentDescriptor(const react::ComponentDescriptorParameters& parameters);
+    explicit HybridStrokeTextViewComponentDescriptor(const react::ComponentDescriptorParameters& parameters);
 
   public:
     /**

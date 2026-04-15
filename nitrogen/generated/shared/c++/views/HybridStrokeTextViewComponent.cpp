@@ -307,37 +307,6 @@ namespace margelo::nitro::stroketext::views {
       }
     }()) { }
 
-  HybridStrokeTextViewProps::HybridStrokeTextViewProps(const HybridStrokeTextViewProps& other):
-    react::ViewProps(),
-    text(other.text),
-    color(other.color),
-    strokeColor(other.strokeColor),
-    strokeWidth(other.strokeWidth),
-    fontSize(other.fontSize),
-    fontWeight(other.fontWeight),
-    fontFamily(other.fontFamily),
-    fontStyle(other.fontStyle),
-    lineHeight(other.lineHeight),
-    letterSpacing(other.letterSpacing),
-    textAlign(other.textAlign),
-    textAlignVertical(other.textAlignVertical),
-    textDecorationLine(other.textDecorationLine),
-    textTransform(other.textTransform),
-    opacity(other.opacity),
-    allowFontScaling(other.allowFontScaling),
-    maxFontSizeMultiplier(other.maxFontSizeMultiplier),
-    includeFontPadding(other.includeFontPadding),
-    numberOfLines(other.numberOfLines),
-    ellipsizeMode(other.ellipsizeMode),
-    padding(other.padding),
-    paddingVertical(other.paddingVertical),
-    paddingHorizontal(other.paddingHorizontal),
-    paddingTop(other.paddingTop),
-    paddingRight(other.paddingRight),
-    paddingBottom(other.paddingBottom),
-    paddingLeft(other.paddingLeft),
-    hybridRef(other.hybridRef) { }
-
   bool HybridStrokeTextViewProps::filterObjectKeys(const std::string& propName) {
     switch (hashString(propName)) {
       case hashString("text"): return true;
@@ -389,10 +358,10 @@ namespace margelo::nitro::stroketext::views {
   void HybridStrokeTextViewComponentDescriptor::adopt(react::ShadowNode& shadowNode) const {
     // This is called immediately after `ShadowNode` is created, cloned or in progress.
     // On Android, we need to wrap props in our state, which gets routed through Java and later unwrapped in JNI/C++.
-    auto& concreteShadowNode = dynamic_cast<HybridStrokeTextViewShadowNode&>(shadowNode);
-    const HybridStrokeTextViewProps& props = concreteShadowNode.getConcreteProps();
-    HybridStrokeTextViewState state;
-    state.setProps(props);
+    auto& concreteShadowNode = static_cast<HybridStrokeTextViewShadowNode&>(shadowNode);
+    const std::shared_ptr<const HybridStrokeTextViewProps>& constProps = concreteShadowNode.getConcreteSharedProps();
+    const std::shared_ptr<HybridStrokeTextViewProps>& props = std::const_pointer_cast<HybridStrokeTextViewProps>(constProps);
+    HybridStrokeTextViewState state{props};
     concreteShadowNode.setStateData(std::move(state));
   }
 #endif

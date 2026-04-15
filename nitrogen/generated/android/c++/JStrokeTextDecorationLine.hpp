@@ -19,7 +19,7 @@ namespace margelo::nitro::stroketext {
    */
   struct JStrokeTextDecorationLine final: public jni::JavaClass<JStrokeTextDecorationLine> {
   public:
-    static auto constexpr kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextDecorationLine;";
+    static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextDecorationLine;";
 
   public:
     /**

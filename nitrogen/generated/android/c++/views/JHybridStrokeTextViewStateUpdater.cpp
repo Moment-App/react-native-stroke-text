@@ -8,6 +8,7 @@
 #include "JHybridStrokeTextViewStateUpdater.hpp"
 #include "views/HybridStrokeTextViewComponent.hpp"
 #include <NitroModules/NitroDefines.hpp>
+#include <react/fabric/StateWrapperImpl.h>
 
 namespace margelo::nitro::stroketext::views {
 
@@ -15,145 +16,144 @@ using namespace facebook;
 using ConcreteStateData = react::ConcreteState<HybridStrokeTextViewState>;
 
 void JHybridStrokeTextViewStateUpdater::updateViewProps(jni::alias_ref<jni::JClass> /* class */,
-                                           jni::alias_ref<JHybridStrokeTextViewSpec::javaobject> javaView,
+                                           jni::alias_ref<JHybridStrokeTextViewSpec::JavaPart> javaView,
                                            jni::alias_ref<JStateWrapper::javaobject> stateWrapperInterface) {
-  JHybridStrokeTextViewSpec* view = javaView->cthis();
+  std::shared_ptr<JHybridStrokeTextViewSpec> hybridView = javaView->getJHybridStrokeTextViewSpec();
 
   // Get concrete StateWrapperImpl from passed StateWrapper interface object
   jobject rawStateWrapper = stateWrapperInterface.get();
-  if (!stateWrapperInterface->isInstanceOf(react::StateWrapperImpl::javaClassStatic())) {
+  if (!stateWrapperInterface->isInstanceOf(react::StateWrapperImpl::javaClassStatic())) [[unlikely]] {
       throw std::runtime_error("StateWrapper is not a StateWrapperImpl");
   }
   auto stateWrapper = jni::alias_ref<react::StateWrapperImpl::javaobject>{
             static_cast<react::StateWrapperImpl::javaobject>(rawStateWrapper)};
-
   std::shared_ptr<const react::State> state = stateWrapper->cthis()->getState();
-  auto concreteState = std::dynamic_pointer_cast<const ConcreteStateData>(state);
+  auto concreteState = std::static_pointer_cast<const ConcreteStateData>(state);
   const HybridStrokeTextViewState& data = concreteState->getData();
-  const std::optional<HybridStrokeTextViewProps>& maybeProps = data.getProps();
-  if (!maybeProps.has_value()) {
+  const std::shared_ptr<HybridStrokeTextViewProps>& props = data.getProps();
+  if (props == nullptr) [[unlikely]] {
     // Props aren't set yet!
     throw std::runtime_error("HybridStrokeTextViewState's data doesn't contain any props!");
   }
-  const HybridStrokeTextViewProps& props = maybeProps.value();
-  if (props.text.isDirty) {
-    view->setText(props.text.value);
-    // TODO: Set isDirty = false
+
+  // Update all props if they are dirty
+  if (props->text.isDirty) {
+    hybridView->setText(props->text.value);
+    props->text.isDirty = false;
   }
-  if (props.color.isDirty) {
-    view->setColor(props.color.value);
-    // TODO: Set isDirty = false
+  if (props->color.isDirty) {
+    hybridView->setColor(props->color.value);
+    props->color.isDirty = false;
   }
-  if (props.strokeColor.isDirty) {
-    view->setStrokeColor(props.strokeColor.value);
-    // TODO: Set isDirty = false
+  if (props->strokeColor.isDirty) {
+    hybridView->setStrokeColor(props->strokeColor.value);
+    props->strokeColor.isDirty = false;
   }
-  if (props.strokeWidth.isDirty) {
-    view->setStrokeWidth(props.strokeWidth.value);
-    // TODO: Set isDirty = false
+  if (props->strokeWidth.isDirty) {
+    hybridView->setStrokeWidth(props->strokeWidth.value);
+    props->strokeWidth.isDirty = false;
   }
-  if (props.fontSize.isDirty) {
-    view->setFontSize(props.fontSize.value);
-    // TODO: Set isDirty = false
+  if (props->fontSize.isDirty) {
+    hybridView->setFontSize(props->fontSize.value);
+    props->fontSize.isDirty = false;
   }
-  if (props.fontWeight.isDirty) {
-    view->setFontWeight(props.fontWeight.value);
-    // TODO: Set isDirty = false
+  if (props->fontWeight.isDirty) {
+    hybridView->setFontWeight(props->fontWeight.value);
+    props->fontWeight.isDirty = false;
   }
-  if (props.fontFamily.isDirty) {
-    view->setFontFamily(props.fontFamily.value);
-    // TODO: Set isDirty = false
+  if (props->fontFamily.isDirty) {
+    hybridView->setFontFamily(props->fontFamily.value);
+    props->fontFamily.isDirty = false;
   }
-  if (props.fontStyle.isDirty) {
-    view->setFontStyle(props.fontStyle.value);
-    // TODO: Set isDirty = false
+  if (props->fontStyle.isDirty) {
+    hybridView->setFontStyle(props->fontStyle.value);
+    props->fontStyle.isDirty = false;
   }
-  if (props.lineHeight.isDirty) {
-    view->setLineHeight(props.lineHeight.value);
-    // TODO: Set isDirty = false
+  if (props->lineHeight.isDirty) {
+    hybridView->setLineHeight(props->lineHeight.value);
+    props->lineHeight.isDirty = false;
   }
-  if (props.letterSpacing.isDirty) {
-    view->setLetterSpacing(props.letterSpacing.value);
-    // TODO: Set isDirty = false
+  if (props->letterSpacing.isDirty) {
+    hybridView->setLetterSpacing(props->letterSpacing.value);
+    props->letterSpacing.isDirty = false;
   }
-  if (props.textAlign.isDirty) {
-    view->setTextAlign(props.textAlign.value);
-    // TODO: Set isDirty = false
+  if (props->textAlign.isDirty) {
+    hybridView->setTextAlign(props->textAlign.value);
+    props->textAlign.isDirty = false;
   }
-  if (props.textAlignVertical.isDirty) {
-    view->setTextAlignVertical(props.textAlignVertical.value);
-    // TODO: Set isDirty = false
+  if (props->textAlignVertical.isDirty) {
+    hybridView->setTextAlignVertical(props->textAlignVertical.value);
+    props->textAlignVertical.isDirty = false;
   }
-  if (props.textDecorationLine.isDirty) {
-    view->setTextDecorationLine(props.textDecorationLine.value);
-    // TODO: Set isDirty = false
+  if (props->textDecorationLine.isDirty) {
+    hybridView->setTextDecorationLine(props->textDecorationLine.value);
+    props->textDecorationLine.isDirty = false;
   }
-  if (props.textTransform.isDirty) {
-    view->setTextTransform(props.textTransform.value);
-    // TODO: Set isDirty = false
+  if (props->textTransform.isDirty) {
+    hybridView->setTextTransform(props->textTransform.value);
+    props->textTransform.isDirty = false;
   }
-  if (props.opacity.isDirty) {
-    view->setOpacity(props.opacity.value);
-    // TODO: Set isDirty = false
+  if (props->opacity.isDirty) {
+    hybridView->setOpacity(props->opacity.value);
+    props->opacity.isDirty = false;
   }
-  if (props.allowFontScaling.isDirty) {
-    view->setAllowFontScaling(props.allowFontScaling.value);
-    // TODO: Set isDirty = false
+  if (props->allowFontScaling.isDirty) {
+    hybridView->setAllowFontScaling(props->allowFontScaling.value);
+    props->allowFontScaling.isDirty = false;
   }
-  if (props.maxFontSizeMultiplier.isDirty) {
-    view->setMaxFontSizeMultiplier(props.maxFontSizeMultiplier.value);
-    // TODO: Set isDirty = false
+  if (props->maxFontSizeMultiplier.isDirty) {
+    hybridView->setMaxFontSizeMultiplier(props->maxFontSizeMultiplier.value);
+    props->maxFontSizeMultiplier.isDirty = false;
   }
-  if (props.includeFontPadding.isDirty) {
-    view->setIncludeFontPadding(props.includeFontPadding.value);
-    // TODO: Set isDirty = false
+  if (props->includeFontPadding.isDirty) {
+    hybridView->setIncludeFontPadding(props->includeFontPadding.value);
+    props->includeFontPadding.isDirty = false;
   }
-  if (props.numberOfLines.isDirty) {
-    view->setNumberOfLines(props.numberOfLines.value);
-    // TODO: Set isDirty = false
+  if (props->numberOfLines.isDirty) {
+    hybridView->setNumberOfLines(props->numberOfLines.value);
+    props->numberOfLines.isDirty = false;
   }
-  if (props.ellipsizeMode.isDirty) {
-    view->setEllipsizeMode(props.ellipsizeMode.value);
-    // TODO: Set isDirty = false
+  if (props->ellipsizeMode.isDirty) {
+    hybridView->setEllipsizeMode(props->ellipsizeMode.value);
+    props->ellipsizeMode.isDirty = false;
   }
-  if (props.padding.isDirty) {
-    view->setPadding(props.padding.value);
-    // TODO: Set isDirty = false
+  if (props->padding.isDirty) {
+    hybridView->setPadding(props->padding.value);
+    props->padding.isDirty = false;
   }
-  if (props.paddingVertical.isDirty) {
-    view->setPaddingVertical(props.paddingVertical.value);
-    // TODO: Set isDirty = false
+  if (props->paddingVertical.isDirty) {
+    hybridView->setPaddingVertical(props->paddingVertical.value);
+    props->paddingVertical.isDirty = false;
   }
-  if (props.paddingHorizontal.isDirty) {
-    view->setPaddingHorizontal(props.paddingHorizontal.value);
-    // TODO: Set isDirty = false
+  if (props->paddingHorizontal.isDirty) {
+    hybridView->setPaddingHorizontal(props->paddingHorizontal.value);
+    props->paddingHorizontal.isDirty = false;
   }
-  if (props.paddingTop.isDirty) {
-    view->setPaddingTop(props.paddingTop.value);
-    // TODO: Set isDirty = false
+  if (props->paddingTop.isDirty) {
+    hybridView->setPaddingTop(props->paddingTop.value);
+    props->paddingTop.isDirty = false;
   }
-  if (props.paddingRight.isDirty) {
-    view->setPaddingRight(props.paddingRight.value);
-    // TODO: Set isDirty = false
+  if (props->paddingRight.isDirty) {
+    hybridView->setPaddingRight(props->paddingRight.value);
+    props->paddingRight.isDirty = false;
   }
-  if (props.paddingBottom.isDirty) {
-    view->setPaddingBottom(props.paddingBottom.value);
-    // TODO: Set isDirty = false
+  if (props->paddingBottom.isDirty) {
+    hybridView->setPaddingBottom(props->paddingBottom.value);
+    props->paddingBottom.isDirty = false;
   }
-  if (props.paddingLeft.isDirty) {
-    view->setPaddingLeft(props.paddingLeft.value);
-    // TODO: Set isDirty = false
+  if (props->paddingLeft.isDirty) {
+    hybridView->setPaddingLeft(props->paddingLeft.value);
+    props->paddingLeft.isDirty = false;
   }
 
   // Update hybridRef if it changed
-  if (props.hybridRef.isDirty) {
+  if (props->hybridRef.isDirty) {
     // hybridRef changed - call it with new this
-    const auto& maybeFunc = props.hybridRef.value;
+    const auto& maybeFunc = props->hybridRef.value;
     if (maybeFunc.has_value()) {
-      std::shared_ptr<JHybridStrokeTextViewSpec> shared = javaView->cthis()->shared_cast<JHybridStrokeTextViewSpec>();
-      maybeFunc.value()(shared);
+      maybeFunc.value()(hybridView);
     }
-    // TODO: Set isDirty = false
+    props->hybridRef.isDirty = false;
   }
 }
 

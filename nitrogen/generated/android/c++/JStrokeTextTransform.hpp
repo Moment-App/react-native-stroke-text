@@ -19,7 +19,7 @@ namespace margelo::nitro::stroketext {
    */
   struct JStrokeTextTransform final: public jni::JavaClass<JStrokeTextTransform> {
   public:
-    static auto constexpr kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextTransform;";
+    static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/stroketext/StrokeTextTransform;";
 
   public:
     /**

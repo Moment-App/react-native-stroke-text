@@ -175,7 +175,7 @@ export function StrokeText({ text, children, style, ...rest }: StrokeTextProps) 
 const styles = StyleSheet.create({
   container: {},
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   hiddenText: {
     opacity: 0,

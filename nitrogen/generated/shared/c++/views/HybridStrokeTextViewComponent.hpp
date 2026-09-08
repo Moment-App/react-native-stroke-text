@@ -8,6 +8,8 @@
 #pragma once
 
 #include <optional>
+#include <memory>
+#include <utility>
 #include <NitroModules/NitroDefines.hpp>
 #include <NitroModules/NitroHash.hpp>
 #include <NitroModules/CachedProp.hpp>
@@ -87,8 +89,8 @@ namespace margelo::nitro::stroketext::views {
   class HybridStrokeTextViewState final {
   public:
     HybridStrokeTextViewState() = default;
-    explicit HybridStrokeTextViewState(const std::shared_ptr<HybridStrokeTextViewProps>& props):
-      _props(props) {}
+    explicit HybridStrokeTextViewState(std::shared_ptr<HybridStrokeTextViewProps> props):
+      _props(std::move(props)) {}
 
   public:
     [[nodiscard]]

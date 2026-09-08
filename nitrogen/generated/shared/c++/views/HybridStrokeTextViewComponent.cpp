@@ -359,9 +359,14 @@ namespace margelo::nitro::stroketext::views {
     // This is called immediately after `ShadowNode` is created, cloned or in progress.
     // On Android, we need to wrap props in our state, which gets routed through Java and later unwrapped in JNI/C++.
     auto& concreteShadowNode = static_cast<HybridStrokeTextViewShadowNode&>(shadowNode);
-    const std::shared_ptr<const HybridStrokeTextViewProps>& constProps = concreteShadowNode.getConcreteSharedProps();
-    const std::shared_ptr<HybridStrokeTextViewProps>& props = std::const_pointer_cast<HybridStrokeTextViewProps>(constProps);
-    HybridStrokeTextViewState state{props};
+    // NOTE(macadam): backport of nitro PR #1502 (fixed upstream in nitro 0.37.0).
+    // Start from the stable shared pointer stored by ShadowNode. React Native 0.79 through 0.87
+    // implement `getConcreteSharedProps()` by returning a reference to a temporary cast result,
+    // so reading it here yields a dangling `shared_ptr` reference.
+    auto constBaseProps = concreteShadowNode.getProps();
+    auto constProps = std::static_pointer_cast<const HybridStrokeTextViewProps>(constBaseProps);
+    auto props = std::const_pointer_cast<HybridStrokeTextViewProps>(std::move(constProps));
+    HybridStrokeTextViewState state{std::move(props)};
     concreteShadowNode.setStateData(std::move(state));
   }
 #endif

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.FontMetricsInt
 import android.graphics.Typeface
+import android.content.res.ColorStateList
 import android.os.Build
 import android.text.Layout
 import android.text.TextDirectionHeuristics
@@ -58,6 +59,10 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   init {
     gravity = Gravity.TOP or Gravity.START
     includeFontPadding = true
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      breakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
+      hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
+    }
   }
 
   fun invalidateTextLayout() {
@@ -67,9 +72,9 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   }
 
   override fun onDraw(canvas: Canvas) {
-    // Draw stroke behind fill, using TextView's layout so metrics match RN <Text/> as closely as
-    // possible (especially for bold fonts).
-    val layout = layout
+    // Draw stroke behind fill through TextView's normal drawing path. Calling super.onDraw()
+    // for both passes keeps Android's TextView layout, glyph shaping, and color state handling
+    // consistent with the fill render while still letting us switch the paint style for outline.
     if (layout != null && strokeWidthPx > 0f && strokeColor != Color.TRANSPARENT) {
       val textPaint = paint
       val prevStyle = textPaint.style
@@ -77,29 +82,23 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
       val prevStrokeJoin = textPaint.strokeJoin
       val prevStrokeCap = textPaint.strokeCap
       val prevColor = textPaint.color
+      val prevTextColors: ColorStateList = textColors
       val prevUnderline = textPaint.isUnderlineText
       val prevStrike = textPaint.isStrikeThruText
-
-      val saveCount = canvas.save()
-      val compoundPaddingLeft = compoundPaddingLeft
-      val extendedPaddingTop = extendedPaddingTop
-
-      canvas.translate(compoundPaddingLeft.toFloat(), extendedPaddingTop.toFloat())
-      canvas.translate(-scrollX.toFloat(), -scrollY.toFloat())
 
       // Only stroke the glyph outlines; keep underline/strike in the fill pass.
       textPaint.isUnderlineText = false
       textPaint.isStrikeThruText = false
 
+      setTextColor(strokeColor)
       textPaint.style = Paint.Style.STROKE
       textPaint.strokeJoin = Paint.Join.ROUND
       textPaint.strokeCap = Paint.Cap.ROUND
       textPaint.strokeWidth = strokeWidthPx
       textPaint.color = strokeColor
-      layout.draw(canvas)
+      super.onDraw(canvas)
 
-      canvas.restoreToCount(saveCount)
-
+      setTextColor(prevTextColors)
       textPaint.style = prevStyle
       textPaint.strokeWidth = prevStrokeWidth
       textPaint.strokeJoin = prevStrokeJoin

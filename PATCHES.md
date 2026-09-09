@@ -26,3 +26,23 @@ value. `HybridStrokeTextViewState` now takes its props by value and moves them.
 Fixed upstream in `react-native-nitro-modules` 0.37.0. Drop this patch once the app can
 move off 0.35.x — currently blocked by `@rive-app/react-native`, which peer-pins
 `react-native-nitro-modules >=0.35.10 <0.36` on every published release.
+
+## 3. Upstream fixes ported without the nitro 0.36/0.37 migration
+
+Upstream `whetware/react-native-stroke-text` 0.0.7 → 0.0.17 fixed Android rendering on
+RN 0.85+/0.86, but 0.0.13+ requires `react-native-nitro-modules` ≥0.36 (0.0.17: ≥0.37),
+which the app cannot take while `@rive-app/react-native` peer-pins nitro `<0.36`. The
+nitro-agnostic parts are ported here, on top of the nitro 0.35.x generated code:
+
+| Upstream commit | What | Ported |
+| --- | --- | --- |
+| `f94116e` | `StrokeTextView.kt`: stroke pass drawn through `super.onDraw()` with `setTextColor(strokeColor)` instead of a manual `canvas.translate` + `layout.draw()`; `breakStrategy`/`hyphenationFrequency`; `HybridStrokeTextView.kt`: `ceil()` on `fontSizePx`; `src/StrokeText.tsx`: Android measured line-break sync, stroke-inset layout rework | yes (Kotlin + JS) |
+| `57b743f` | `resolveNativeTextTransform` — never hand Nitro's optional enum converter a `null` | yes |
+| `dc51db3` | `createNativePropPresenceKey` / `normalizeNativeOptionalProps` — Fabric encodes a removed prop as `null`, Nitro accepts only `undefined`; remount the host view when prop presence changes | yes |
+| `3a89a1d` | JS side of "fix rendering problems on android" | yes |
+| `61f4846`, `3a89a1d` | nitro 0.36/0.37 migration: `cpp-adapter.cpp`, `onDropView`, deleted `StrokeTextViewManager.kt`, `nitro.json`, regenerated `nitrogen/` | **no** — keep the 0.35.x plumbing (incl. patches 1 and 2 above) |
+
+`StrokeTextView.kt` is byte-identical to upstream `main`; `HybridStrokeTextView.kt` carries only
+the `ceil()` hunk. `lib/` is rebuilt with `tsc` only — never `pnpm run specs` here.
+
+When Rive lifts its nitro pin, drop this fork state and move to upstream ≥0.0.17 directly.

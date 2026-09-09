@@ -3,6 +3,7 @@ package com.margelo.nitro.stroketext
 import android.view.View
 import com.facebook.jni.HybridData
 import com.facebook.react.uimanager.ThemedReactContext
+import kotlin.math.ceil
 
 class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSpec() {
   private val strokeTextView = StrokeTextView(context)
@@ -77,12 +78,14 @@ class HybridStrokeTextView(context: ThemedReactContext) : HybridStrokeTextViewSp
         )
 
     strokeTextView.fontSizePx =
-        StrokeTextView.textToPx(
-            fontSize ?: 14.0,
-            resolvedAllowFontScaling,
-            resolvedMaxFontSizeMultiplier,
-            displayMetrics,
-        )
+        ceil(
+            StrokeTextView.textToPx(
+                fontSize ?: 14.0,
+                resolvedAllowFontScaling,
+                resolvedMaxFontSizeMultiplier,
+                displayMetrics,
+            ).toDouble()
+        ).toFloat()
     strokeTextView.fontWeight = fontWeight
     strokeTextView.fontFamily = fontFamily
     strokeTextView.fontStyle = fontStyle ?: StrokeTextFontStyle.NORMAL

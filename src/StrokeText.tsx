@@ -1,14 +1,34 @@
 import React from 'react'
-import { StyleSheet, Text, View, type TextStyle } from 'react-native'
+import { Platform, StyleSheet, Text, View, type TextStyle } from 'react-native'
 import { callback, getHostComponent } from 'react-native-nitro-modules'
 
 import StrokeTextViewConfig from '../nitrogen/generated/shared/json/StrokeTextViewConfig.json'
-import type { StrokeTextMethods, StrokeTextNativeProps, StrokeTextProps } from './types'
+import {
+  createNativePropPresenceKey,
+  normalizeNativeOptionalProps,
+} from './createNativePropPresenceKey'
+import { resolveNativeTextTransform } from './resolveNativeTextTransform'
+import type {
+  StrokeTextMethods,
+  StrokeTextNativeProps,
+  StrokeTextProps,
+} from './types'
 
 const NativeStrokeTextView = getHostComponent<
   StrokeTextNativeProps,
   StrokeTextMethods
 >('StrokeTextView', () => StrokeTextViewConfig)
+
+type OptionalStrokeTextNativePropName =
+  | {
+      [K in keyof StrokeTextNativeProps]-?: {} extends Pick<
+        StrokeTextNativeProps,
+        K
+      >
+        ? K
+        : never
+    }[keyof StrokeTextNativeProps]
+  | 'hybridRef'
 
 function resolveText(text: unknown, children: unknown): string {
   if (typeof text === 'string') return text
@@ -26,6 +46,30 @@ function firstNumber(...values: unknown[]): number | undefined {
     if (n != null) return n
   }
   return undefined
+}
+
+type TextLayoutLineForNativeText = {
+  readonly text: string
+}
+
+function toNativeMeasuredLineText(line: TextLayoutLineForNativeText): string {
+  return line.text.replace(/ /g, '\u00a0')
+}
+
+function toNativeMeasuredText(
+  lines: readonly TextLayoutLineForNativeText[]
+): string | undefined {
+  if (lines.length === 0) return undefined
+
+  let result = ''
+  lines.forEach((line, index) => {
+    const lineText = toNativeMeasuredLineText(line)
+    result += lineText
+    if (index < lines.length - 1 && !lineText.endsWith('\n')) {
+      result += '\n'
+    }
+  })
+  return result
 }
 
 function toFontWeightString(value: unknown): string | undefined {
@@ -192,10 +236,116 @@ export function StrokeText({
     nativeProps.textDecorationLine ?? styleTextDecorationLine
   const effectiveTextTransform = nativeProps.textTransform ?? styleTextTransform
   const effectiveColor = nativeProps.color ?? toColorString(styleColor)
+  const shouldSyncMeasuredLineBreaks =
+    Platform.OS === 'android' && effectiveNumberOfLines == null
+  const [measuredNativeText, setMeasuredNativeText] = React.useState<
+    string | undefined
+  >(undefined)
+  const nativeText = measuredNativeText ?? resolvedText
+  const nativeTextTransform = resolveNativeTextTransform(
+    effectiveTextTransform,
+    measuredNativeText != null
+  )
+  // RN's hidden Text owns measurement, but Android TextView gets its own layout pass.
+  // Compensate for the native stroke inset on every edge, then give that native
+  // pass extra right-side room so one-pixel/font-metric drift cannot turn an RN
+  // single line into a native soft wrap.
+  const nativeOverlayInset =
+    Platform.OS === 'android' && strokeInset > 0 ? strokeInset : 0
+  const nativeOverlayRightInset =
+    nativeOverlayInset > 0 ? nativeOverlayInset * 2 : 0
 
   const wrappedHybridRef = React.useMemo(
     () => (hybridRef ? callback(hybridRef) : undefined),
     [hybridRef]
+  )
+
+  const nativeOptionalProps = normalizeNativeOptionalProps({
+    color: effectiveColor,
+    strokeColor: nativeProps.strokeColor,
+    strokeWidth,
+    fontSize: effectiveFontSize,
+    fontWeight: effectiveFontWeight,
+    fontFamily: effectiveFontFamily,
+    fontStyle: effectiveFontStyle,
+    lineHeight: effectiveLineHeight,
+    letterSpacing: effectiveLetterSpacing,
+    textAlign: effectiveTextAlign,
+    textAlignVertical: effectiveTextAlignVertical,
+    textDecorationLine: effectiveTextDecorationLine,
+    textTransform: nativeTextTransform,
+    opacity: nativeProps.opacity ?? toNumber(styleOpacity),
+    allowFontScaling: nativeProps.allowFontScaling,
+    maxFontSizeMultiplier: nativeProps.maxFontSizeMultiplier,
+    includeFontPadding: effectiveIncludeFontPadding,
+    numberOfLines: effectiveNumberOfLines ?? 0,
+    ellipsizeMode: effectiveEllipsizeMode ?? 'tail',
+    padding: undefined,
+    paddingVertical: undefined,
+    paddingHorizontal: undefined,
+    paddingTop: baseTop,
+    paddingRight: baseRight,
+    paddingBottom: baseBottom,
+    paddingLeft: baseLeft,
+    hybridRef: wrappedHybridRef,
+  } satisfies Record<OptionalStrokeTextNativePropName, unknown> &
+    Partial<React.ComponentProps<typeof NativeStrokeTextView>>)
+
+  // Fabric encodes a removed view prop as null, but Nitro's optional converter
+  // accepts only undefined. Remount the native host when any optional
+  // prop changes definedness so Fabric never sends a value-to-null update.
+  const nativePropPresenceKey = createNativePropPresenceKey(nativeOptionalProps)
+
+  React.useEffect(() => {
+    setMeasuredNativeText(undefined)
+  }, [
+    resolvedText,
+    effectiveNumberOfLines,
+    effectiveEllipsizeMode,
+    effectiveFontSize,
+    effectiveFontWeight,
+    effectiveFontFamily,
+    effectiveFontStyle,
+    effectiveLineHeight,
+    effectiveLetterSpacing,
+    effectiveTextAlign,
+    effectiveTextAlignVertical,
+    effectiveTextDecorationLine,
+    effectiveTextTransform,
+    effectiveIncludeFontPadding,
+    baseTop,
+    baseRight,
+    baseBottom,
+    baseLeft,
+    strokeInset,
+  ])
+
+  const handleTextLayout = React.useCallback<
+    NonNullable<React.ComponentProps<typeof Text>['onTextLayout']>
+  >(
+    (event) => {
+      if (!shouldSyncMeasuredLineBreaks) return
+
+      const lineCount = event.nativeEvent.lines.length
+      if (lineCount <= 1) {
+        setMeasuredNativeText((currentText) =>
+          currentText == null ? currentText : undefined
+        )
+        return
+      }
+
+      const nextText = toNativeMeasuredText(event.nativeEvent.lines)
+      if (nextText == null) return
+      const nextMeasuredNativeText =
+        nextText === resolvedText ? undefined : nextText
+
+      setMeasuredNativeText((currentText) =>
+        currentText === nextMeasuredNativeText
+          ? currentText
+          : nextMeasuredNativeText
+      )
+    },
+    [resolvedText, shouldSyncMeasuredLineBreaks]
   )
 
   const measurerTextStyle = React.useMemo(
@@ -237,15 +387,18 @@ export function StrokeText({
         pointerEvents="none"
         numberOfLines={effectiveNumberOfLines}
         ellipsizeMode={effectiveEllipsizeMode}
+        onTextLayout={handleTextLayout}
         allowFontScaling={nativeProps.allowFontScaling}
         maxFontSizeMultiplier={nativeProps.maxFontSizeMultiplier}
         style={[
           measurerTextStyle,
+          // The hidden RN Text is the layout source of truth, so reserve the same
+          // inset that the native TextView uses to keep the outline inside bounds.
           {
-            paddingTop: baseTop,
-            paddingRight: baseRight,
-            paddingBottom: baseBottom,
-            paddingLeft: baseLeft,
+            paddingTop: baseTop + strokeInset,
+            paddingRight: baseRight + strokeInset,
+            paddingBottom: baseBottom + strokeInset,
+            paddingLeft: baseLeft + strokeInset,
           },
           styles.hiddenText,
         ]}
@@ -254,39 +407,20 @@ export function StrokeText({
       </Text>
 
       <NativeStrokeTextView
-        {...nativeProps}
-        text={resolvedText}
-        color={effectiveColor}
-        fontSize={effectiveFontSize}
-        fontWeight={effectiveFontWeight}
-        fontFamily={effectiveFontFamily}
-        fontStyle={effectiveFontStyle}
-        lineHeight={effectiveLineHeight}
-        letterSpacing={effectiveLetterSpacing}
-        textAlign={effectiveTextAlign}
-        textAlignVertical={effectiveTextAlignVertical}
-        textDecorationLine={effectiveTextDecorationLine}
-        textTransform={effectiveTextTransform}
-        opacity={nativeProps.opacity ?? toNumber(styleOpacity)}
-        includeFontPadding={effectiveIncludeFontPadding}
-        numberOfLines={nativeProps.numberOfLines}
-        ellipsizeMode={effectiveEllipsizeMode}
-        paddingTop={baseTop}
-        paddingRight={baseRight}
-        paddingBottom={baseBottom}
-        paddingLeft={baseLeft}
-        hybridRef={wrappedHybridRef}
+        key={nativePropPresenceKey}
+        text={nativeText}
+        {...nativeOptionalProps}
         pointerEvents="none"
         style={[
           styles.overlay,
-          strokeInset === 0
-            ? null
-            : {
-                top: -strokeInset,
-                right: -strokeInset,
-                bottom: -strokeInset,
-                left: -strokeInset,
-              },
+          nativeOverlayInset > 0
+            ? {
+                top: -nativeOverlayInset,
+                right: -nativeOverlayRightInset,
+                bottom: -nativeOverlayInset,
+                left: -nativeOverlayInset,
+              }
+            : null,
         ]}
       />
     </View>

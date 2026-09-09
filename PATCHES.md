@@ -42,7 +42,19 @@ nitro-agnostic parts are ported here, on top of the nitro 0.35.x generated code:
 | `3a89a1d` | JS side of "fix rendering problems on android" | yes |
 | `61f4846`, `3a89a1d` | nitro 0.36/0.37 migration: `cpp-adapter.cpp`, `onDropView`, deleted `StrokeTextViewManager.kt`, `nitro.json`, regenerated `nitrogen/` | **no** — keep the 0.35.x plumbing (incl. patches 1 and 2 above) |
 
-`StrokeTextView.kt` is byte-identical to upstream `main`; `HybridStrokeTextView.kt` carries only
+`StrokeTextView.kt` is upstream `main` plus `ensureTextLayout()` (see 4 below); `HybridStrokeTextView.kt` carries only
 the `ceil()` hunk. `lib/` is rebuilt with `tsc` only — never `pnpm run specs` here.
 
 When Rive lifts its nitro pin, drop this fork state and move to upstream ≥0.0.17 directly.
+
+## 4. `StrokeTextView.ensureTextLayout()` (TEA-1180)
+
+File: `android/src/main/java/com/margelo/nitro/stroketext/StrokeTextView.kt` (hand-written, survives
+`pnpm run specs`).
+
+Fabric adds the view with `WRAP_CONTENT` LayoutParams and `ReactViewGroup.requestLayout()` is a
+no-op, so every `setText()` after the first layout goes through `TextView.checkForRelayout()`'s
+`nullLayouts()` branch and nothing re-measures the view. `TextView.onDraw()` rebuilds the layout
+itself, but the stroke pass runs first and is guarded by `layout != null`, so that frame draws the
+fill only and the outline stays missing until the next invalidate. `ensureTextLayout()` re-measures
+with the current size at the top of `onDraw()` when the layout is null. Not an upstream fix.

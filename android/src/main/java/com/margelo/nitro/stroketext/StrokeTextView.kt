@@ -72,6 +72,8 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
   }
 
   override fun onDraw(canvas: Canvas) {
+    ensureTextLayout()
+
     // Draw stroke behind fill through TextView's normal drawing path. Calling super.onDraw()
     // for both passes keeps Android's TextView layout, glyph shaping, and color state handling
     // consistent with the fill render while still letting us switch the paint style for outline.
@@ -109,6 +111,19 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
     }
 
     super.onDraw(canvas)
+  }
+
+  // Fabric adds this view with WRAP_CONTENT LayoutParams and ignores its requestLayout(), so
+  // every setText() after the first layout nulls TextView's layout and nothing re-measures it.
+  // TextView.onDraw() would rebuild it, but only after our stroke pass has already been skipped
+  // (`layout == null`), leaving the fill without its outline until the next invalidate.
+  private fun ensureTextLayout() {
+    if (layout != null || width <= 0 || height <= 0) return
+    forceLayout()
+    measure(
+      View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+      View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY),
+    )
   }
 
   private fun applyProps() {

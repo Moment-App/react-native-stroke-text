@@ -42,7 +42,7 @@ nitro-agnostic parts are ported here, on top of the nitro 0.35.x generated code:
 | `3a89a1d` | JS side of "fix rendering problems on android" | yes |
 | `61f4846`, `3a89a1d` | nitro 0.36/0.37 migration: `cpp-adapter.cpp`, `onDropView`, deleted `StrokeTextViewManager.kt`, `nitro.json`, regenerated `nitrogen/` | **no** — keep the 0.35.x plumbing (incl. patches 1 and 2 above) |
 
-`StrokeTextView.kt` is upstream `main` plus `ensureTextLayout()` (see 4 below); `HybridStrokeTextView.kt` carries only
+`StrokeTextView.kt` is upstream `main` plus `ensureTextLayout()` and `suppressInvalidate` (see 4 and 5 below); `HybridStrokeTextView.kt` carries only
 the `ceil()` hunk. `lib/` is rebuilt with `tsc` only — never `pnpm run specs` here.
 
 When Rive lifts its nitro pin, drop this fork state and move to upstream ≥0.0.17 directly.
@@ -58,3 +58,11 @@ no-op, so every `setText()` after the first layout goes through `TextView.checkF
 itself, but the stroke pass runs first and is guarded by `layout != null`, so that frame draws the
 fill only and the outline stays missing until the next invalidate. `ensureTextLayout()` re-measures
 with the current size at the top of `onDraw()` when the layout is null. Not an upstream fix.
+
+## 5. `StrokeTextView.suppressInvalidate` (redraw loop from patch 3)
+
+Same file. The upstream `onDraw()` ported in patch 3 calls `setTextColor()` twice per draw (stroke
+colour in, fill colour back). `TextView.updateTextColors()` calls `invalidate()` whenever the colour
+changes, so every frame with stroke text on screen scheduled another frame: continuous redraw while
+any stroke text was visible (measured with `dumpsys gfxinfo`, ~190 frames in 5 s on a static screen).
+`invalidate()` is overridden to be a no-op while the stroke pass runs. Not an upstream fix.

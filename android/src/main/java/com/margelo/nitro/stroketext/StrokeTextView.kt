@@ -71,6 +71,15 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
     invalidate()
   }
 
+  // TextView.setTextColor() invalidates whenever the colour changes, and the stroke pass flips
+  // it twice per draw, so every frame with stroke text on screen queued another frame.
+  private var suppressInvalidate = false
+
+  override fun invalidate() {
+    if (suppressInvalidate) return
+    super.invalidate()
+  }
+
   override fun onDraw(canvas: Canvas) {
     ensureTextLayout()
 
@@ -92,15 +101,20 @@ internal class StrokeTextView(context: ThemedReactContext) : TextView(context) {
       textPaint.isUnderlineText = false
       textPaint.isStrikeThruText = false
 
-      setTextColor(strokeColor)
-      textPaint.style = Paint.Style.STROKE
-      textPaint.strokeJoin = Paint.Join.ROUND
-      textPaint.strokeCap = Paint.Cap.ROUND
-      textPaint.strokeWidth = strokeWidthPx
-      textPaint.color = strokeColor
-      super.onDraw(canvas)
+      suppressInvalidate = true
+      try {
+        setTextColor(strokeColor)
+        textPaint.style = Paint.Style.STROKE
+        textPaint.strokeJoin = Paint.Join.ROUND
+        textPaint.strokeCap = Paint.Cap.ROUND
+        textPaint.strokeWidth = strokeWidthPx
+        textPaint.color = strokeColor
+        super.onDraw(canvas)
 
-      setTextColor(prevTextColors)
+        setTextColor(prevTextColors)
+      } finally {
+        suppressInvalidate = false
+      }
       textPaint.style = prevStyle
       textPaint.strokeWidth = prevStrokeWidth
       textPaint.strokeJoin = prevStrokeJoin
